@@ -1,10 +1,511 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+  <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PatentPilot</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a2f;
+      --panel-2: #18233d;
+      --text: #ecf2ff;
+      --muted: #9fb1d1;
+      --line: rgba(255,255,255,0.08);
+      --blue: #60a5fa;
+      --blue-2: #2563eb;
+      --cyan: #22d3ee;
+      --purple: #a78bfa;
+      --gold: #fbbf24;
+      --green: #34d399;
+      --red: #f87171;
+      --shadow: 0 14px 40px rgba(0,0,0,0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(167,139,250,0.16), transparent 22%),
+        linear-gradient(180deg, #0b1020 0%, #0f172a 100%);
+      color: var(--text);
+    }
+
+    .shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 20px;
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 2px;
+    }
+
+    .brand-sub {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .hero {
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      top: -60px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(96,165,250,0.22), transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 58px;
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+      max-width: 760px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.6;
+      max-width: 780px;
+      margin: 0 0 18px;
+    }
+
+    .hero-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 20px;
+    }
+
+    .hero-card-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .hero-card-big {
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.05;
+      margin-bottom: 14px;
+    }
+
+    .hero-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .tabbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .tab-btn {
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(96,165,250,0.22), rgba(167,139,250,0.22));
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.045);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .section-title {
+      font-size: 25px;
+      font-weight: 800;
+      margin: 0 0 14px;
+      letter-spacing: -0.03em;
+    }
+
+    .label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: #d8e4ff;
+      margin-bottom: 10px;
+    }
+
+    textarea, input, select {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    textarea::placeholder, input::placeholder {
+      color: #93a4c6;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+      align-items: center;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, var(--blue-2), var(--purple));
+      color: white;
+      box-shadow: 0 8px 24px rgba(37,99,235,0.28);
+    }
+
+    .secondary-btn {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .helper {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .results-wrap { margin-top: 24px; }
+
+    .results-title {
+      font-size: 30px;
+      font-weight: 800;
+      margin: 0 0 14px;
+      letter-spacing: -0.04em;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.055);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      margin-top: 14px;
+    }
+
+    .card-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .analysis-box {
+      white-space: pre-wrap;
+      line-height: 1.7;
+      color: #d7e4ff;
+      margin-top: 12px;
+      font-size: 15px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--line);
+    }
+
+    .chip.blue { background: rgba(37,99,235,0.18); color: #bfdbfe; }
+    .chip.green { background: rgba(22,163,74,0.18); color: #bbf7d0; }
+    .chip.amber { background: rgba(217,119,6,0.18); color: #fde68a; }
+    .chip.red { background: rgba(220,38,38,0.18); color: #fecaca; }
+
+    .progress {
+      height: 12px;
+      width: 100%;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 14px;
+      border: 1px solid var(--line);
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--cyan), var(--blue), var(--purple));
+    }
+
+    .patent-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      background: rgba(255,255,255,0.045);
+      margin-top: 14px;
+    }
+
+    .patent-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .patent-abstract {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+
+    .patent-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .score-line {
+      font-weight: 800;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .link {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    .side-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 12px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .history-item {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 13px;
+      color: #d8e4ff;
+    }
+
+    .history-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: white;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .small-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .small-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .loading {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .workspace,
+      .grid-4,
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      h1 { font-size: 42px; }
+    }
+  </style>
 </head>
 <body>
   <div class="shell">
@@ -16,7 +517,7 @@
           <div class="brand-sub">Prestige patent intelligence interface</div>
         </div>
       </div>
-      <div class="pill">Live patent dataset connected</div>
+      <div class="pill">Live spreadsheet-connected patent database</div>
     </div>
 
     <div class="hero">
@@ -26,7 +527,7 @@
           <h1>Professional invention screening.</h1>
           <p>
             Analyze invention ideas, estimate novelty, surface similar prior art, explore filing strategy,
-            and interact with a multi-screen interface that changes based on the invention itself.
+            and interact with a multi-screen interface that actually changes based on the invention itself.
           </p>
         </div>
 
@@ -34,8 +535,8 @@
           <div class="hero-card-title">Core mission</div>
           <div class="hero-card-big">Analyze. Compare. Decide.</div>
           <ul class="hero-list">
-            <li>Evaluate invention ideas against patent records</li>
-            <li>Generate invention-specific novelty and risk reasoning</li>
+            <li>Evaluate invention ideas against live patent records</li>
+            <li>Generate input-specific novelty and risk reasoning</li>
             <li>Surface strongest matching patents</li>
             <li>Show what to refine before filing</li>
           </ul>
@@ -94,8 +595,8 @@
         <div class="panel">
           <div class="side-title">Session Intelligence</div>
           <div class="muted">
-            This workspace responds to the invention itself. Strengths, weaknesses, risk explanations,
-            filing strategy, and claim starter outputs all change depending on the user input.
+            This workspace now responds to the invention itself. Strengths, weaknesses, risk explanations,
+            filing strategy, and claim starter outputs all change depending on the user’s input.
           </div>
 
           <div style="height:18px;"></div>
@@ -178,6 +679,519 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    let patentCache = [];
+    let latestAnalysis = null;
+
+    function switchTab(id, btn) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      btn.classList.add("active");
+    }
+
+    function scorePatentMatch(idea, patentAbstract, patentTitle) {
+      let score = 0;
+      const lowerIdea = idea.toLowerCase();
+      const words = lowerIdea.split(/\s+/);
+      const abstractText = (patentAbstract || "").toLowerCase();
+      const titleText = (patentTitle || "").toLowerCase();
+
+      for (let word of words) {
+        if (word.length > 3) {
+          if (abstractText.includes(word)) score += 2;
+          if (titleText.includes(word)) score += 3;
+        }
+      }
+
+      if (lowerIdea.includes("biosensor") && (abstractText.includes("sensor") || titleText.includes("sensor"))) score += 10;
+      if (lowerIdea.includes("electrolyte") && abstractText.includes("electrolyte")) score += 10;
+      if (lowerIdea.includes("wearable") && abstractText.includes("wearable")) score += 8;
+      if (lowerIdea.includes("drug delivery") && abstractText.includes("delivery")) score += 10;
+      if (lowerIdea.includes("medical") && (abstractText.includes("medical") || titleText.includes("medical"))) score += 6;
+      if (lowerIdea.includes("device") && titleText.includes("device")) score += 5;
+      if (lowerIdea.includes("dehydration") && abstractText.includes("fluid")) score += 4;
+      if (lowerIdea.includes("biopsy") && (abstractText.includes("biopsy") || titleText.includes("biopsy"))) score += 8;
+      if (lowerIdea.includes("diagnostic") && abstractText.includes("diagnostic")) score += 8;
+
+      return score;
+    }
+
+    function detectCategory(idea) {
+      const text = idea.toLowerCase();
+      if (text.includes("biosensor") || text.includes("diagnostic") || text.includes("biomarker")) return "Biotech / Diagnostic";
+      if (text.includes("drug delivery") || text.includes("dosage") || text.includes("therapeutic")) return "Drug Delivery / Therapeutics";
+      if (text.includes("medical") || text.includes("device") || text.includes("wearable")) return "Medical Device";
+      if (text.includes("ai") || text.includes("software") || text.includes("app")) return "Software / AI";
+      return "General Technology";
+    }
+
+    function getInnovationScore(idea, topScore) {
+      const lowerIdea = idea.toLowerCase();
+      let score = 60;
+
+      if (idea.length > 50) score += 10;
+      if (lowerIdea.includes("biosensor")) score += 12;
+      if (lowerIdea.includes("electrolyte")) score += 10;
+      if (lowerIdea.includes("wearable")) score += 8;
+      if (lowerIdea.includes("diagnostic")) score += 8;
+      if (lowerIdea.includes("drug delivery")) score += 8;
+      if (lowerIdea.includes("medical")) score += 6;
+      if (lowerIdea.includes("sensor")) score += 6;
+      if (lowerIdea.includes("microfluidic")) score += 8;
+      if (lowerIdea.includes("noninvasive") || lowerIdea.includes("non-invasive")) score += 7;
+      if (lowerIdea.includes("continuous")) score += 4;
+
+      score -= Math.min(topScore * 1.5, 15);
+      score = Math.max(1, Math.min(100, Math.round(score)));
+      return score;
+    }
+
+    function noveltyLabel(score) {
+      if (score >= 80) return "High";
+      if (score >= 60) return "Moderate";
+      return "Low";
+    }
+
+    function saturationLabel(idea) {
+      const text = idea.toLowerCase();
+      if (text.includes("ai") || text.includes("app")) return "High";
+      if (text.includes("wearable")) return "High";
+      if (text.includes("medical") || text.includes("biosensor") || text.includes("device")) return "Medium";
+      return "Low";
+    }
+
+    function riskLabel(topScore) {
+      if (topScore >= 14) return "High";
+      if (topScore >= 7) return "Moderate";
+      return "Low";
+    }
+
+    function recommendationLabel(innovationScore) {
+      if (innovationScore > 75) return "Proceed to prototype or provisional patent";
+      if (innovationScore > 60) return "Refine and differentiate further";
+      return "Needs stronger technical uniqueness";
+    }
+
+    function getKeywordChips(idea) {
+      const stopWords = new Set([
+        "that","this","with","through","from","into","using","your","idea",
+        "for","and","the","than","then","have","has","detects"
+      ]);
+
+      const words = idea
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .split(/\s+/)
+        .filter(w => w.length > 3 && !stopWords.has(w));
+
+      return [...new Set(words)].slice(0, 8);
+    }
+
+    function chipClass(type, value) {
+      if (type === "novelty") return value === "High" ? "green" : value === "Moderate" ? "amber" : "red";
+      if (type === "risk") return value === "Low" ? "green" : value === "Moderate" ? "amber" : "red";
+      if (type === "saturation") return value === "Low" ? "green" : value === "Medium" ? "amber" : "red";
+      return "blue";
+    }
+
+    function saveHistory(idea, score, recommendation) {
+      const current = JSON.parse(localStorage.getItem("patentpilot_history") || "[]");
+      current.unshift({ idea, score, recommendation });
+      localStorage.setItem("patentpilot_history", JSON.stringify(current.slice(0, 6)));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const historyDiv = document.getElementById("history");
+      const history = JSON.parse(localStorage.getItem("patentpilot_history") || "[]");
+
+      if (!history.length) {
+        historyDiv.innerHTML = '<div class="history-item">No analyses yet.</div>';
+        return;
+      }
+
+      historyDiv.innerHTML = history.map(item => `
+        <div class="history-item">
+          <strong>${item.idea}</strong>
+          Score: ${item.score}/100<br>
+          ${item.recommendation}
+        </div>
+      `).join("");
+    }
+
+    function loadSample() {
+      document.getElementById("idea").value =
+        "wearable biosensor that detects dehydration through sweat electrolyte levels";
+    }
+
+    function clearIdea() {
+      document.getElementById("idea").value = "";
+      document.getElementById("results").innerHTML = "";
+      document.getElementById("statsGrid").style.display = "none";
+      document.getElementById("analyzerContent").innerHTML =
+        'Analyze an idea first to generate input-specific strengths, weaknesses, overlap patterns, and differentiation gaps.';
+      document.getElementById("riskContent").innerHTML =
+        'Analyze an idea first to populate risk drivers, overlap concerns, and risk-lowering recommendations.';
+      document.getElementById("strategyContent").innerHTML =
+        'Analyze an idea first to generate a filing path based on novelty, risk, and concept maturity.';
+      document.getElementById("claimOutput").innerHTML =
+        '<div class="muted">Analyze an idea first, then generate a claim starter based on that exact invention.</div>';
+      latestAnalysis = null;
+    }
+
+    function analyzeIdea() {
+      const idea = document.getElementById("idea").value.trim();
+      const resultsDiv = document.getElementById("results");
+      const statsGrid = document.getElementById("statsGrid");
+
+      if (idea === "") {
+        resultsDiv.innerHTML = '<div class="card empty">Please enter an idea to analyze.</div>';
+        statsGrid.style.display = "none";
+        return;
+      }
+
+      resultsDiv.innerHTML = '<div class="card loading">Running novelty screening, scoring risk, and checking similar patents...</div>';
+      statsGrid.style.display = "none";
+
+      google.script.run
+        .withSuccessHandler(function(patents) {
+          patentCache = patents.slice();
+
+          let scoredPatents = patents.map(patent => ({
+            ...patent,
+            score: scorePatentMatch(idea, patent.abstract, patent.title)
+          }));
+
+          scoredPatents.sort((a, b) => b.score - a.score);
+
+          const topPatents = scoredPatents.slice(0, 5);
+          const topScore = topPatents.length ? topPatents[0].score : 0;
+          const innovationScore = getInnovationScore(idea, topScore);
+          const novelty = noveltyLabel(innovationScore);
+          const saturation = saturationLabel(idea);
+          const risk = riskLabel(topScore);
+          const recommendation = recommendationLabel(innovationScore);
+          const chips = getKeywordChips(idea);
+          const category = detectCategory(idea);
+
+          const strengths = [];
+          const weaknesses = [];
+          const improvements = [];
+          const examinerQuestions = [];
+
+          if (idea.length > 45) strengths.push("The description is specific enough for meaningful screening.");
+          else weaknesses.push("The description is still broad and needs more technical precision.");
+
+          if (chips.includes("biosensor") || chips.includes("diagnostic") || chips.includes("electrolyte")) {
+            strengths.push("The idea includes domain-specific technical language.");
+          } else {
+            weaknesses.push("The idea would benefit from stronger mechanism-level technical detail.");
+          }
+
+          if (risk === "High") {
+            weaknesses.push("Top patent matches overlap significantly with the concept.");
+            improvements.push("Differentiate the sensing method, architecture, or technical pathway.");
+          }
+
+          if (saturation === "High") {
+            weaknesses.push("This invention category appears crowded.");
+            improvements.push("Define a narrower embodiment or more defensible technical niche.");
+          }
+
+          if (category === "Medical Device") {
+            examinerQuestions.push("What exact physiological signal or condition does the device measure?");
+            examinerQuestions.push("How is the device structurally different from existing medical devices?");
+          }
+
+          if (category === "Biotech / Diagnostic") {
+            examinerQuestions.push("What biomarker, analyte, or biological signal is specifically targeted?");
+            examinerQuestions.push("What detection mechanism is novel relative to current diagnostics?");
+          }
+
+          if (category === "Drug Delivery / Therapeutics") {
+            examinerQuestions.push("What delivery route or dosage control mechanism is technically new?");
+            examinerQuestions.push("How does the formulation or release pathway differ from prior art?");
+          }
+
+          if (category === "Software / AI") {
+            examinerQuestions.push("What technical implementation goes beyond generic software logic?");
+            examinerQuestions.push("What system-level improvement makes the invention patent-eligible?");
+          }
+
+          if (examinerQuestions.length === 0) {
+            examinerQuestions.push("What feature is genuinely new compared with the top matching patents?");
+            examinerQuestions.push("What exact technical mechanism makes this invention non-obvious?");
+          }
+
+          if (improvements.length === 0) {
+            improvements.push("Clarify the exact technical mechanism that makes the invention different.");
+            improvements.push("Compare top patents and identify features they do not appear to claim.");
+          }
+
+          latestAnalysis = {
+            idea,
+            innovationScore,
+            novelty,
+            saturation,
+            risk,
+            topScore,
+            recommendation,
+            chips,
+            patents: topPatents,
+            category,
+            strengths,
+            weaknesses,
+            improvements,
+            examinerQuestions
+          };
+
+          document.getElementById("innovationValue").textContent = innovationScore + "/100";
+          document.getElementById("noveltyValue").textContent = novelty;
+          document.getElementById("riskValue").textContent = risk;
+          document.getElementById("topMatchValue").textContent = topScore;
+          statsGrid.style.display = "grid";
+
+          let analysis = "";
+          analysis += "Idea: " + idea + "\n";
+          analysis += "Detected category: " + category + "\n\n";
+
+          analysis += "Strengths:\n- " + strengths.join("\n- ") + "\n\n";
+          analysis += "Watchouts:\n- " + weaknesses.join("\n- ") + "\n\n";
+          analysis += "Priority improvements:\n- " + improvements.join("\n- ");
+
+          let output = `
+            <div class="card">
+              <div class="card-title">Patent Analysis</div>
+
+              <div class="chip-row">
+                <span class="chip ${chipClass('novelty', novelty)}">Novelty: ${novelty}</span>
+                <span class="chip ${chipClass('saturation', saturation)}">Market Saturation: ${saturation}</span>
+                <span class="chip ${chipClass('risk', risk)}">Patent Risk: ${risk}</span>
+                <span class="chip blue">Category: ${category}</span>
+              </div>
+
+              <div class="progress">
+                <div class="progress-bar" style="width:${innovationScore}%;"></div>
+              </div>
+
+              <div class="analysis-box">${analysis}</div>
+
+              <div class="chip-row">
+                ${chips.map(c => `<span class="chip">${c}</span>`).join("")}
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Top Similar Patents</div>
+              <div class="muted">These matches are ranked specifically against the current invention input.</div>
+            </div>
+          `;
+
+          topPatents.forEach(patent => {
+            output += `
+              <div class="patent-card">
+                <div class="patent-title">${patent.title}</div>
+                <div class="patent-abstract">${patent.abstract}</div>
+                <div class="patent-meta">
+                  <span class="score-line">Similarity Score: ${patent.score}</span>
+                  <a class="link" href="${patent.link}" target="_blank">Open patent record</a>
+                </div>
+              </div>
+            `;
+          });
+
+          resultsDiv.innerHTML = output;
+          saveHistory(idea, innovationScore, recommendation);
+          renderAnalyzerScreen();
+          renderRiskScreen();
+          renderStrategyScreen();
+          renderExplorer();
+        })
+        .withFailureHandler(function(error) {
+          resultsDiv.innerHTML = `<div class="card">Error: ${error.message}</div>`;
+          statsGrid.style.display = "none";
+        })
+        .getPatents();
+    }
+
+    function renderAnalyzerScreen() {
+      const target = document.getElementById("analyzerContent");
+
+      if (!latestAnalysis) {
+        target.innerHTML = 'Analyze an idea first to generate input-specific strengths, weaknesses, overlap patterns, and differentiation gaps.';
+        return;
+      }
+
+      const a = latestAnalysis;
+
+      target.innerHTML = `
+        <div class="two-col">
+          <div class="small-card">
+            <div class="small-title">Strengths detected</div>
+            <ul class="list">${a.strengths.map(x => `<li>${x}</li>`).join("")}</ul>
+          </div>
+          <div class="small-card">
+            <div class="small-title">Weaknesses detected</div>
+            <ul class="list">${a.weaknesses.map(x => `<li>${x}</li>`).join("")}</ul>
+          </div>
+        </div>
+
+        <div class="small-card" style="margin-top:16px;">
+          <div class="small-title">Examiner-style questions for this invention</div>
+          <ul class="list">${a.examinerQuestions.map(x => `<li>${x}</li>`).join("")}</ul>
+        </div>
+
+        <div class="small-card" style="margin-top:16px;">
+          <div class="small-title">Uniqueness gap</div>
+          <div class="muted">
+            PatentPilot thinks the main uniqueness gap is in how clearly the invention distinguishes its mechanism,
+            structure, or technical pathway from the highest-ranked prior art.
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExplorer() {
+      const container = document.getElementById("explorerResults");
+      if (!patentCache.length) {
+        container.innerHTML = '<div class="muted">Analyze an idea first to browse your connected patent dataset with relevance scoring.</div>';
+        return;
+      }
+
+      const q = (document.getElementById("explorerSearch").value || "").toLowerCase().trim();
+      const min = parseInt(document.getElementById("minScoreSelect").value || "0", 10);
+      const idea = (document.getElementById("idea").value || "").trim();
+
+      let rows = patentCache.map(p => ({
+        ...p,
+        score: idea ? scorePatentMatch(idea, p.abstract, p.title) : 0
+      }));
+
+      rows = rows.filter(p => {
+        const text = (p.title + " " + p.abstract).toLowerCase();
+        return (!q || text.includes(q)) && p.score >= min;
+      });
+
+      rows.sort((a, b) => b.score - a.score);
+
+      if (!rows.length) {
+        container.innerHTML = '<div class="card empty">No patents matched your explorer filters.</div>';
+        return;
+      }
+
+      container.innerHTML = rows.slice(0, 12).map(p => `
+        <div class="patent-card">
+          <div class="patent-title">${p.title}</div>
+          <div class="patent-abstract">${p.abstract}</div>
+          <div class="patent-meta">
+            <span class="score-line">Similarity Score: ${p.score}</span>
+            <a class="link" href="${p.link}" target="_blank">Open patent record</a>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderRiskScreen() {
+      const target = document.getElementById("riskContent");
+
+      if (!latestAnalysis) {
+        target.innerHTML = 'Analyze an idea first to populate risk drivers, overlap concerns, and risk-lowering recommendations.';
+        return;
+      }
+
+      const a = latestAnalysis;
+
+      target.innerHTML = `
+        <div class="two-col">
+          <div class="small-card">
+            <div class="small-title">Risk drivers</div>
+            <ul class="list">
+              <li>Top overlap score: ${a.topScore}</li>
+              <li>Patent risk: ${a.risk}</li>
+              <li>Saturation: ${a.saturation}</li>
+              <li>Category: ${a.category}</li>
+            </ul>
+          </div>
+          <div class="small-card">
+            <div class="small-title">Risk-lowering actions</div>
+            <ul class="list">${a.improvements.map(x => `<li>${x}</li>`).join("")}</ul>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStrategyScreen() {
+      const target = document.getElementById("strategyContent");
+
+      if (!latestAnalysis) {
+        target.innerHTML = 'Analyze an idea first to generate a filing path based on novelty, risk, and concept maturity.';
+        return;
+      }
+
+      const a = latestAnalysis;
+      let filingPath = "Refine the idea before any filing decision.";
+      if (a.innovationScore >= 80 && a.risk !== "High") {
+        filingPath = "Strong candidate for prototype development and early provisional patent planning.";
+      } else if (a.innovationScore >= 65) {
+        filingPath = "Promising concept; strengthen differentiation before provisional filing.";
+      } else {
+        filingPath = "Needs stronger novelty and technical specificity before filing.";
+      }
+
+      target.innerHTML = `
+        <div class="small-card">
+          <div class="small-title">Recommended next step</div>
+          <div class="muted">${filingPath}</div>
+        </div>
+
+        <div class="two-col" style="margin-top:16px;">
+          <div class="small-card">
+            <div class="small-title">Refine before filing</div>
+            <ul class="list">${a.improvements.map(x => `<li>${x}</li>`).join("")}</ul>
+          </div>
+          <div class="small-card">
+            <div class="small-title">What to research next</div>
+            <ul class="list">
+              <li>Closest patents by similarity score</li>
+              <li>Key claim language in overlapping patents</li>
+              <li>Alternative embodiments</li>
+              <li>Design-around opportunities</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+
+    function generateClaimStarter() {
+      const target = document.getElementById("claimOutput");
+
+      if (!latestAnalysis) {
+        target.innerHTML = '<div class="card empty">Analyze an idea first so the claim starter reflects the exact invention.</div>';
+        return;
+      }
+
+      const a = latestAnalysis;
+      const chips = a.chips;
+
+      let claim = "A " + a.category.toLowerCase() + " system comprising: ";
+      claim += "a " + (chips[0] || "core") + "-based component; ";
+      claim += "a module configured to perform " + (chips[1] || "technical") + "-related detection, control, or processing; ";
+      claim += "an output pathway associated with " + (chips[2] || "system operation") + "; ";
+      claim += "wherein the system is configured to improve performance relative to related prior art.";
+
+      target.innerHTML = `
+        <div class="card">
+          <div class="card-title">Claim Starter</div>
+          <div class="analysis-box">${claim}</div>
+          <div class="muted" style="margin-top:12px;">
+            This draft changes with the invention input and is for brainstorming structure, not legal filing language.
+          </div>
+        </div>
+      `;
+    }
+
+    renderHistory();
+  </script>
 </body>
 </html>
